@@ -1,0 +1,33 @@
+# This is the makefile for Win32 to build pdpclib using
+# the gcc compiler.
+#
+# The makefile uses spaces, which are normal for Windows
+# users, and Borland make, Microsoft nmake and others are
+# happy to accept them. If you are using Cygwin or a make
+# that unfortunately requires tabs, then simply edit this
+# file, change all spaces to tabs, and it will work, even
+# if the resultant file looks a bit silly.
+
+CC=gcc
+COPTS=-c -O2 -D__WIN32__ -I .
+
+OBJS = \
+ w32start.o stdio.o string.o stdlib.o \
+ start.o time.o errno.o assert.o signal.o \
+ locale.o ctype.o setjmp.o math.o __memmgr.o \
+ winsupb.obj
+
+all: pdptest.exe
+
+pdpwin32.a: $(OBJS)
+ ar -cr pdpwin32.a $(OBJS)
+
+pdptest.exe: pdpwin32.a pdptest.o
+ gcc -s -nostdlib -o pdptest.exe pdptest.o pdpwin32.a -lgcc -lkernel32
+
+.c.o:
+ $(CC) $(COPTS) $<
+
+%.obj: %.asm
+ nasm -f win32 -o $@ $<
+

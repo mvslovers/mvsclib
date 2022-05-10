@@ -1,0 +1,135 @@
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/PARM *
+/INC PURGE
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/sys region=9999,xregion=64m
+/file sysprint prt osrecfm(f) oslrecl(256)
+/file in tape osrecfm(u) oslrecl(0) osblksize(32760) vol(PCTOMF) old
+/parm dd:in
+/load xmon
+mvsunzip n(mvsunzip.lmod) lcparm
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/sys region=9999,xregion=64m
+/inc rexx
+'copy *.mac *.m'
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/SAVE PDPASM REPL
+/inc rexx
+parse arg name
+queue "/file syspunch n("name".obj) new(repl) sp(50) secsp(100%)"
+queue "/file syslib pds(@BLD000:*.M,$MCU:*.M,$MCM:*.M)"
+queue "/load asm"
+queue "/job nogo"
+queue "/opt deck,list"
+queue "/inc" name".asm"
+"EXEC"
+
+exit rc
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/SAVE PDPCOMP REPL
+/inc rexx
+parse arg name
+queue "/file obj1 n("name".obj) new(repl) sp(50) secsp(100%)"
+queue "/file syslib pds(@BLD000:*.H)"
+queue "/inc watc"
+queue "/job nogo"
+queue "/opt PRM __STDC_VERSION__ 0 PRM __MVS__ 1 PRM __WATMUS__ 1 PRM MUSIC 1"
+queue "/inc" name".c"
+"EXEC"
+
+exit rc
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/inc rexx
+'pdpcomp pdptest'
+'pdpcomp assert'
+'pdpcomp ctype'
+'pdpcomp errno'
+'pdpcomp locale'
+'pdpcomp math'
+'pdpcomp setjmp'
+'pdpcomp signal'
+'pdpcomp stdio'
+'pdpcomp stdlib'
+'pdpcomp string'
+'pdpcomp time'
+'pdpcomp start'
+'pdpasm musstart'
+'pdpasm mussupa'
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/sys region=9999
+/file lmod n(pdptest.lmod) new(repl) lr(128) recfm(f) sp(100) shr
+/load lked
+/job map,nogo,print,stats,mode=os,name=pdptest
+.org 4a00
+/inc pdptest.obj
+/inc musstart.obj
+/inc mussupa.obj
+/inc assert.obj
+/inc ctype.obj
+/inc errno.obj
+/inc locale.obj
+/inc math.obj
+/inc setjmp.obj
+/inc signal.obj
+/inc stdio.obj
+/inc stdlib.obj
+/inc string.obj
+/inc time.obj
+/inc start.obj
+ ENTRY @@CRT0
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/sys region=3000,xregion=64m
+/parm *
+/inc dir
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/sys region=9999,xregion=64m
+/file sysprint prt osrecfm(f) oslrecl(256)
+/parm Hi there DeeeeeFerDog
+/load xmon
+pdptest n(pdptest.lmod) lcparm
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/SAVE RUNPDP REPL
+/inc rexx
+queue "/sys region=9999,xregion=64m"
+queue "/file sysprint prt osrecfm(f) oslrecl(256)"
+queue "/parm a1 b2"
+queue "/load xmon"
+queue "pdptest n(pdptest.lmod) lcparm"
+"EXEC"
+
+exit rc
+/END
+
+/ID SAVE-JOB-123456 @BLD000 9999 9999 9999 9999
+/PASSWORD=BLD000
+/inc rexx
+'runpdp'
+/END

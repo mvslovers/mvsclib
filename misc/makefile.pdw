@@ -1,0 +1,41 @@
+# This builds a.out files for PDOS386, on Windows
+# For the 32-bit version of PDOS we define __PDOS386__
+# Note that we link twice, because the second link
+# doesn't report unresolved externals for some reason
+
+CC=gcc386
+COPTS=-S -Os -fno-common -D__PDOS386__ -D__32BIT__ -I. -I../src
+
+pdptest.exe: pdosst32.o pdptest.o stdio.o string.o stdlib.o \
+       start.o time.o errno.o assert.o signal.o locale.o \
+       ctype.o setjmp.o math.o pos.o support.o pdossupc.o bos.o \
+       liballoc.o
+  rm -f pdos.a
+  ar386 r pdos.a pdosst32.o stdio.o string.o stdlib.o
+  ar386 r pdos.a start.o time.o errno.o assert.o signal.o
+  ar386 r pdos.a locale.o ctype.o setjmp.o math.o
+  ar386 r pdos.a pos.o support.o pdossupc.o bos.o liballoc.o
+  ld386 -s -e ___pdosst32 -o pdptest.exe pdosst32.o pdptest.o pdos.a
+  ld386 -r -s -e ___pdosst32 -o pdptest.exe pdosst32.o pdptest.o pdos.a
+  strip386 --strip-unneeded pdptest.exe
+
+bos.o: ../src/bos.c
+  $(CC) $(COPTS) -o $&.s ../src/bos.c
+  as386 -o $@ $&.s
+  rm -f $&.s
+
+pos.o: ../src/pos.c
+  $(CC) $(COPTS) -o $&.s ../src/pos.c
+  as386 -o $@ $&.s
+  rm -f $&.s
+
+support.o: ../src/support.s
+  as386 -o $@ ../src/support.s
+
+.c.o:
+  $(CC) $(COPTS) -o $&.s $<
+  as386 -o $@ $&.s
+  rm -f $&.s
+
+.s.o:
+  as386 -o $@ $<

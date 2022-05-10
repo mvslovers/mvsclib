@@ -1,0 +1,18 @@
+CC=tcc
+COPTS=-O -w -c -I. -ml
+
+pdptest.exe: dosstart.obj pdptest.obj stdio.obj string.obj stdlib.obj \
+       start.obj time.obj errno.obj assert.obj signal.obj locale.obj \
+       ctype.obj setjmp.obj math.obj dossupc.obj dossupa.obj
+  if exist borland.lib del borland.lib
+  tlib borland +dosstart.obj +stdio.obj +string.obj +stdlib.obj
+  tlib borland +start.obj +time.obj +errno.obj +assert.obj +signal.obj
+  tlib borland +locale.obj +ctype.obj +setjmp.obj +math.obj
+  tlib borland +dossupc.obj +dossupa.obj
+  tlink dosstart+pdptest,pdptest.exe,nul.map,borland.lib,
+
+.c.obj:
+  $(CC) $(COPTS) $<
+
+.asm.obj:
+  wasmr -q -zcm $<

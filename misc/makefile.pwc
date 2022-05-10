@@ -1,0 +1,18 @@
+# Makefile for Power C (doesn't work though)
+
+CC=pc
+COPTS=-w -I. -ml -D__MSDOS__
+
+pdptest.exe: dosstart.mix stdio.mix string.mix stdlib.mix \
+       start.mix time.mix errno.mix assert.mix signal.mix locale.mix \
+       ctype.mix setjmp.mix math.mix fpfuncsb.mix
+  $(CC) $(COPTS) pdptest.c
+  pcl pdptest,powerc
+
+dosstart.mix: dosstart.asm
+  tasm -mx -w2 dosstart.asm
+#  mix dosstart.obj dosstart.mix
+
+.c.mix:
+  $(CC) $(COPTS) $<
+  merge powerc $*
