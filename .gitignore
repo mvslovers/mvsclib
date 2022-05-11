@@ -1,4 +1,5 @@
-.idea
-cmake-build*
-*.o
 *.a
+*.o
+.idea
+build/*
+cmake-build*

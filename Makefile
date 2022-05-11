@@ -11,8 +11,8 @@ C_SOURCE:=$(wildcard \
 
 OBJ:=$(subst .c,.o,$(C_SOURCE))
 
-pdplinux.a: $(OBJ) linux/asm/linsupa.o
-	ar r linux/pdplinux.a $(OBJ) linux/asm/linsupa.o
+libmvsclib.a: $(OBJ) linux/asm/linsupa.o
+	ar r linux/libmvsclib.a $(OBJ) linux/asm/linsupa.o
 
 .c.o:
 	$(CC) $< $(COPTS) -o $@
@@ -21,4 +21,4 @@ linux/asm/linsupa.o: linux/asm/linsupa.asm
 	as --32 -o $@ $<
 
 clean:
-	@rm -f common/src/*.o linux/asm/linsupa.o linux/pdplinux.a
+	@rm -f common/src/*.o linux/asm/linsupa.o linux/libmvsclib.a
