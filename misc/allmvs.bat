@@ -1,2 +1,0 @@
-call zipmvs
-call subjobs

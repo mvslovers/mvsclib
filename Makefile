@@ -3,21 +3,22 @@
 #
 
 CC=gcc
-COPTS=-c -O2 -fno-builtin -DUSE_MEMMGR -I . -m32 -fno-stack-protector
+COPTS=-c -O2 -fno-builtin -DUSE_MEMMGR -I common/include -m32 -fno-stack-protector
 
-pdplinux.a: linstart.o linsupa.o stdio.o string.o stdlib.o \
-       start.o time.o errno.o assert.o signal.o locale.o \
-       ctype.o setjmp.o math.o __memmgr.o
-	ar r pdplinux.a linstart.o linsupa.o stdio.o string.o stdlib.o
-	ar r pdplinux.a start.o time.o errno.o assert.o signal.o
-	ar r pdplinux.a locale.o ctype.o setjmp.o math.o __memmgr.o
-#	gcc -nostdlib -o pdptest linstart.o linsupa.o pdptest.o pdplinux.a
+C_SOURCE:=$(wildcard \
+	./common/src/*.c \
+)
+
+OBJ:=$(subst .c,.o,$(C_SOURCE))
+
+pdplinux.a: $(OBJ) linux/asm/linsupa.o
+	ar r linux/pdplinux.a $(OBJ) linux/asm/linsupa.o
 
 .c.o:
-	$(CC) $(COPTS) $<
+	$(CC) $< $(COPTS) -o $@
 
-linsupa.o: linsupa.asm
+linux/asm/linsupa.o: linux/asm/linsupa.asm
 	as --32 -o $@ $<
 
 clean:
-	@rm *.o pdplinux.a
+	@rm -f common/src/*.o linux/asm/linsupa.o linux/pdplinux.a
