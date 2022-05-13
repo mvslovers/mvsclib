@@ -1,0 +1,15 @@
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ __memmgr.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ assert.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ ctype.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ errno.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ locale.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ math.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ setjmp.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ signal.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ start.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ stdio.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ stdlib.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ string.c
+gccmvs -Os -DXXX_MEMMGR -S -I ../include/ time.c
+
+ m4 -I ../mvs/maclib/ -I ../mvs/asm/ -I src/ job_template.m4 > job.jcl
