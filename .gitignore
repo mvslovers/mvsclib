@@ -4,5 +4,5 @@
 build/*
 cmake-build*
 common/src/**/*.s
-job.jcl
+job_mvs.jcl
 mvs/src/**/*.s

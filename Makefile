@@ -39,19 +39,20 @@ MVS_C_SOURCE+=$(wildcard ./mvs/src/fss/*.c)
 MVS_S:=$(subst .c,.s,$(MVS_C_SOURCE))
 
 mvs_asm: $(MVS_S)
-	m4 -I mvs/maclib/ -I mvs/asm/ -I common/src/ job_template.m4 > job.jcl
+	m4 -I mvs/maclib/ -I mvs/asm/ -I common/src/ job_mvs_template.m4 > job_mvs.jcl
 
 .c.s:
 	$(GCCMVS) $(MVS_OPTS) $< -o $@
 
 send_ascii:
-	nc -w1 $(HERCHOST) $(HERCPORT) < job.jcl
+	nc -w1 $(HERCHOST) $(HERCPORT) < job_mvs.jcl
 
 send_ebcdic:
-	$(RDRPREP) job.jcl tmp.jcl_E
+	$(RDRPREP) job_mvs.jcl tmp.jcl_E
 	nc -w1 $(HERCHOST) $(HERCPORT) < tmp.jcl_E
 
 clean:
 	@rm -f common/src/*.o common/src/*.s \
 		   linux/asm/linsupa.o linux/libmvsclib.a \
-		   mvs/src/ezasmi/*.s mvs/src/fss/*.s
+		   mvs/src/ezasmi/*.s mvs/src/fss/*.s \
+		   job_mvs.jcl
