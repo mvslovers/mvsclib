@@ -51,15 +51,10 @@ SUBPOOL  EQU   0
 * editor statements, code @@MAIN instead. For IBM C you
 * need to code @@CRT0.
 *
-         DC    C'PDPCLIB!'
+         DC    C'MVSCLIB!'
 *
          ENTRY @@CRT0    make this globally visible
 @@CRT0   DS    0H        defacto entry point
-         AIF ('&COMP' NE 'IBMC').NOCEES
-         ENTRY CEESTART  I don't think IBM should be polluting
-*                        the namespace with this
-CEESTART DS    0H
-.NOCEES  ANOP
 * For this next line to work there must be no intervening instructions
 * since it is based on reference to @@CRT0
          SAVE  (14,12),,@@CRT0   Save caller's registers
@@ -77,11 +72,7 @@ CEESTART DS    0H
 *                                trash R1, so we need to save that,
 *                                in R11 in this case.
 * Keep stack BTL so that the save area traceback works on MVS/380 2.0
-         AIF ('&ZSYS' EQ 'S370').NOBEL
-         GETMAIN RU,LV=STACKLEN,SP=SUBPOOL,LOC=BELOW
-         AGO .GETFIN
-.NOBEL   GETMAIN RU,LV=STACKLEN,SP=SUBPOOL
-.GETFIN  ANOP
+         GETMAIN RU,LV=STACKLEN,SP=SUBPOOL
          ST    R13,4(,R1)        Remember the R13 that MVS gave us
          ST    R1,8(,R13)        Let MVS know our new R13 (save area)
          LR    R13,R1            Switch to using our new R13
@@ -184,16 +175,6 @@ RETURNMS DS    0H
 SAVER13  DS    A      So that everyone can find the start of the stack
          LTORG
          DS    0H
-         AIF ('&COMP' NE 'IBMC').NOCEES2
-         ENTRY CEESG003
-CEESG003 DS    0H
-         ENTRY CEEBETBL
-CEEBETBL DS    0H
-         ENTRY CEEROOTA
-CEEROOTA DS    0H
-         ENTRY EDCINPL
-EDCINPL  DS    0H
-.NOCEES2 ANOP
 * This function enables GCC and probably IBM C programs to do an
 * early exit, ie callable from anywhere.
          ENTRY @@EXITA
