@@ -42,3 +42,6 @@ int __system(int req_type,
 
 #pragma linkage(__doloop, OS)
 void __doloop(void);
+
+#pragma linkage(__svc, OS)
+int __svc(int svc, int *r0, int *r1, int *r15);

@@ -3218,6 +3218,40 @@ TRUNCOEX L     R13,4(,R13)
          LTORG ,
          POP   USING
          SPACE 2
+*
+*
+*
+***********************************************************************
+*                                                                     *
+*  __SVC(int svc, int *r0, int *r1, int *r15)                         *
+*                                                                     *
+***********************************************************************
+         PUSH  USING
+         DROP  ,
+@@SVC    FUNHEAD ,
+*
+         LR    R11,R1             SAVE PARAMETER LIST
+*
+         LM    R4,R7,0(R11)       LOAD ADDRESSES OF SVC NUM,R0,R1,R15
+*
+         L     R0,0(R5)           LOAD VALUE FOR R0
+         L     R1,0(R6)           LOAD VALUE FOR R1
+         L     R15,0(R7)          LOAD VALUE FOR R15
+*
+         EX    R4,*+8             EXCUTE SVC
+         B     *+6    
+         SVC   0 
+*
+         ST    R15,0(R7)          UPDATE R15
+         ST    R1,0(R6)           UPDATE R1
+         ST    R0,0(R5)           UPDATE R0
+*
+         FUNEXIT RC=(R15)
+	 SPACE 2
+	 POP   USING
+*
+*
+*
 ***********************************************************************
 *                                                                     *
 *  GETM - GET MEMORY                                                  *
@@ -3789,6 +3823,7 @@ DYNALDLN EQU   *-DYNALWRK     LENGTH OF DYNAMIC STORAGE
 *
 RETURNGP RETURN (14,12),RC=(15)                                 GP17107
          POP   USING                                            GP17107
+
 *
 *
 *
