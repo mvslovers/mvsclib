@@ -1,14 +1,69 @@
-//GCCGEN   JOB CLASS=A,MSGCLASS=X,REGION=0K,
+//MVSCLIB  JOB (MVSCLIB),'MVSCLIB',
+//           CLASS=A,
+//           MSGCLASS=A,
+//           MSGLEVEL=(1,1),
+//           REGION=4096K,
 //           USER=__USER__,
-//           PASSWORD=__PASS__
-//*
-//PDPASM   PROC PDPPREF='MVSCLIB',MEMBER=''
-//*
+//           PASSWORD=__PASS__,
+//           NOTIFY=__USER__
+/*JOBPARM LINES=100
+//* -------------------------------------------------------------------
+//ALIAS1   EXEC PGM=IDCAMS
+//SYSIN    DD *
+  DEFINE ALIAS(NAME(MVSCLIB) RELATE(UCPUB000))
+  DELETE MVSCLIB.MACLIB
+  DELETE MVSCLIB.NCALIB
+  SET MAXCC=0
+//SYSPRINT DD  SYSOUT=*
+//* -------------------------------------------------------------------
+//ALLOC    EXEC PGM=IEFBR14
+//MACLIB   DD DSN=MVSCLIB.MACLIB,
+//          DISP=(NEW,CATLG,DELETE),
+//          UNIT=3390,VOL=SER=PUB001,
+//          SPACE=(CYL,(1,0,32)),DCB=SYS1.MACLIB 
+//NCALIB   DD DSN=MVSCLIB.NCALIB,
+//          DISP=(NEW,CATLG,DELETE),
+//          UNIT=3390,VOL=SER=PUB001,
+//          SPACE=(CYL,(2,0,80)),DCB=SYS1.MACLIB
+//* -------------------------------------------------------------------
+//PDPMAIN  EXEC PGM=IEBGENER
+//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPMAIN),DISP=(OLD,PASS)
+//SYSUT1   DD  *
+undivert(pdpmain.mac)dnl
+/*
+//SYSPRINT DD  SYSOUT=*
+//SYSIN    DD  DUMMY
+//* -------------------------------------------------------------------
+//PDPPRLG  EXEC PGM=IEBGENER
+//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPPRLG),DISP=(OLD,PASS)
+//SYSUT1   DD  *
+undivert(pdpprlg.mac)dnl
+/*
+//SYSPRINT DD  SYSOUT=*
+//SYSIN    DD  DUMMY
+//* -------------------------------------------------------------------
+//PDPEPIL  EXEC PGM=IEBGENER
+//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPEPIL),DISP=(OLD,PASS)
+//SYSUT1   DD  *
+undivert(pdpepil.mac)dnl
+/*
+//SYSPRINT DD  SYSOUT=*
+//SYSIN    DD  DUMMY
+//* -------------------------------------------------------------------
+//PDPTOP   EXEC PGM=IEBGENER
+//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPTOP),DISP=(OLD,PASS)
+//SYSUT1   DD  *
+undivert(pdptop.mac)dnl
+/*
+//SYSPRINT DD  SYSOUT=*
+//SYSIN    DD  DUMMY
+//* -------------------------------------------------------------------
+//PDPASM   PROC MVSPREF=MVSCLIB,MEMBER=DUMMY
 //ASM      EXEC PGM=IFOX00,
 //         PARM='DECK,LIST,TERM'
 //SYSLIB   DD DSN=SYS1.MACLIB,DISP=SHR,DCB=BLKSIZE=32720
 //         DD DSN=SYS1.AMODGEN,DISP=SHR
-//         DD DSN=&PDPPREF..MACLIB,DISP=SHR
+//         DD DSN=&MVSPREF..MACLIB,DISP=SHR
 //SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(20,10))
 //SYSUT2   DD UNIT=SYSALLDA,SPACE=(CYL,(10,10))
 //SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(10,10))
@@ -18,49 +73,14 @@
 //SYSGO    DD DUMMY
 //SYSPUNCH DD DSN=&&OBJSET,UNIT=SYSALLDA,SPACE=(80,(4000,4000)),
 //            DISP=(,PASS)
-//*
-//LKED     EXEC PGM=IEWL,PARM='NCAL',
-//            COND=(4,LT,ASM)
+//LKED     EXEC PGM=IEWL,PARM='NCAL',COND=(4,LT,ASM)
 //SYSLIN   DD DSN=&&OBJSET,DISP=(OLD,DELETE)
 //         DD DDNAME=SYSIN
 //SYSIN    DD DUMMY
-//SYSLMOD  DD DSN=&PDPPREF..NCALIB(&MEMBER),DISP=SHR
+//SYSLMOD  DD DSN=&MVSPREF..NCALIB(&MEMBER),DISP=SHR
 //SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
 //SYSPRINT DD SYSOUT=*
 //         PEND
-//*
-//PDPTOP   EXEC PGM=IEBGENER
-//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPTOP),DISP=(OLD,PASS)
-//SYSUT1   DD  *
-undivert(pdptop.mac)dnl
-/*
-//SYSPRINT DD  SYSOUT=*
-//SYSIN    DD  DUMMY
-//*
-//PDPMAIN  EXEC PGM=IEBGENER
-//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPMAIN),DISP=(OLD,PASS)
-//SYSUT1   DD  *
-undivert(pdpmain.mac)dnl
-/*
-//SYSPRINT DD  SYSOUT=*
-//SYSIN    DD  DUMMY
-//*
-//PDPPRLG  EXEC PGM=IEBGENER
-//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPPRLG),DISP=(OLD,PASS)
-//SYSUT1   DD  *
-undivert(pdpprlg.mac)dnl
-/*
-//SYSPRINT DD  SYSOUT=*
-//SYSIN    DD  DUMMY
-//*
-//PDPEPIL  EXEC PGM=IEBGENER
-//SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPEPIL),DISP=(OLD,PASS)
-//SYSUT1   DD  *
-undivert(pdpepil.mac)dnl
-/*
-//SYSPRINT DD  SYSOUT=*
-//SYSIN    DD  DUMMY
-//*
 //MVSSTART EXEC PDPASM,MEMBER=MVSSTART
 //SYSIN  DD  *
 undivert(mvsstart.asm)dnl
@@ -69,6 +89,7 @@ undivert(mvsstart.asm)dnl
  ALIAS @@CRT0
  ALIAS @@EXITA
 /*
+//* -------------------------------------------------------------------
 //MVSSUPA  EXEC PDPASM,MEMBER=MVSSUPA
 //SYSIN  DD  *
 undivert(mvssupa.asm)dnl
@@ -119,7 +140,7 @@ undivert(stdio.s)dnl
  ALIAS FSEEK
  NAME STDIO(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //STDIO2   EXEC PDPASM,MEMBER=STDIO
 //SYSIN  DD *
 undivert(stdio.s)dnl
@@ -143,7 +164,7 @@ undivert(stdio.s)dnl
  ALIAS GETS
  NAME STDIO2(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //STDIO3   EXEC PDPASM,MEMBER=STDIO
 //SYSIN  DD *
 undivert(stdio.s)dnl
@@ -163,7 +184,7 @@ undivert(stdio.s)dnl
  ALIAS @@USERFI
  NAME STDIO3(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //STDLIB   EXEC PDPASM,MEMBER=STDLIB
 //SYSIN  DD  *
 undivert(stdlib.s)dnl
@@ -187,7 +208,7 @@ undivert(stdlib.s)dnl
  ALIAS MBLEN
  NAME STDLIB(R)
 /*
-//* 
+//* ------------------------------------------------------------------- 
 //STDLIB2  EXEC PDPASM,MEMBER=STDLIB
 //SYSIN  DD  *
 undivert(stdlib.s)dnl
@@ -208,7 +229,7 @@ undivert(stdlib.s)dnl
  ALIAS @@USEREX
  NAME STDLIB2(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //CTYPE    EXEC PDPASM,MEMBER=CTYPE
 //SYSIN  DD  *
 undivert(ctype.s)dnl
@@ -232,7 +253,7 @@ undivert(ctype.s)dnl
  ALIAS TOUPPER
  NAME CTYPE(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //STRING   EXEC PDPASM,MEMBER=STRING
 //SYSIN  DD  *
 undivert(string.s)dnl
@@ -369,5 +390,5 @@ undivert(__memmgr.s)dnl
 //LKED.SYSIN DD *
  NAME @@MEMMGR(R)
 /*
-//*
+//* -------------------------------------------------------------------
 //

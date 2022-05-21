@@ -39,6 +39,7 @@ MVS_C_SOURCE+=$(wildcard ./mvs/src/ezasmi/*.c)
 MVS_C_SOURCE+=$(wildcard ./mvs/src/fss/*.c)
 
 MVS_S:=$(subst .c,.s,$(MVS_C_SOURCE))
+MVS_S+=$(wildcard ./mvs/asm/*.asm)
 
 mvs_asm: $(MVS_S)
 	m4 -D__USER__=$(USER) -D__PASS__=$(PASS) \
