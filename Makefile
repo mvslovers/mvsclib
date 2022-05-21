@@ -44,6 +44,13 @@ mvs_asm: $(MVS_S)
 .c.s:
 	$(GCCMVS) $(MVS_OPTS) $< -o $@
 
+send_ascii:
+	nc -w1 $(HERCHOST) $(HERCPORT) < job.jcl
+
+send_ebcdic:
+	$(RDRPREP) job.jcl tmp.jcl_E
+	nc -w1 $(HERCHOST) $(HERCPORT) < tmp.jcl_E
+
 clean:
 	@rm -f common/src/*.o common/src/*.s \
 		   linux/asm/linsupa.o linux/libmvsclib.a \
