@@ -40,8 +40,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "tso.h"
-#include "fss.h"
+#include <fss/tso.h>
+#include <fss/fss.h>
 
 // Limit To a 3270 Mod 2
 #define MAX_ROW 24
@@ -50,11 +50,11 @@
 // Field Definition
 struct sFields
 {
-   char *name;  // Field Name or Null String for TXT fields
-   int bufaddr; // Field location - offset into 3270 buffer
-   int attr;    // Attribute values
-   int length;  // Field Length
-   char *data;  // Field Data
+    char *name;  // Field Name or Null String for TXT fields
+    int bufaddr; // Field location - offset into 3270 buffer
+    int attr;    // Attribute values
+    int length;  // Field Length
+    char *data;  // Field Data
 };
 
 // Calculate buffer offset from Row and Column
@@ -80,7 +80,7 @@ static int fssCSRPOS;                  // Buffer Position to place Cursor at nex
 // Debugging TPUT - Used only for debugging purposes
 static void dput(char *txt)
 {
-   tput(txt, strlen(txt));
+    tput(txt, strlen(txt));
 }
 
 //----------------------------------------
@@ -90,16 +90,16 @@ static void dput(char *txt)
 //----------------------------------------
 static int findFieldPos(int pos)
 {
-   int ix;
+    int ix;
 
-   if (fssFieldCnt < 1) // If no fields
-      return 0;
+    if (fssFieldCnt < 1) // If no fields
+        return 0;
 
-   for (ix = 0; ix < fssFieldCnt; ix++) // Loop through Field Array
-      if (pos == fssFields[ix].bufaddr) // Check for match
-         return (ix + 1);               // Return index + 1
+    for (ix = 0; ix < fssFieldCnt; ix++)  // Loop through Field Array
+        if (pos == fssFields[ix].bufaddr) // Check for match
+            return (ix + 1);              // Return index + 1
 
-   return 0; // No match found
+    return 0; // No match found
 }
 
 //----------------------------------------
@@ -109,16 +109,16 @@ static int findFieldPos(int pos)
 //----------------------------------------
 static int findField(char *fldName)
 {
-   int ix;
+    int ix;
 
-   if (fssFieldCnt < 1) // If no fields
-      return 0;
+    if (fssFieldCnt < 1) // If no fields
+        return 0;
 
-   for (ix = 0; ix < fssFieldCnt; ix++) // Loop through Field Array
-      if (!strcmp(fldName, fssFields[ix].name))
-         return (ix + 1); // Return index + 1
+    for (ix = 0; ix < fssFieldCnt; ix++) // Loop through Field Array
+        if (!strcmp(fldName, fssFields[ix].name))
+            return (ix + 1); // Return index + 1
 
-   return 0; // No match found
+    return 0; // No match found
 }
 
 //----------------------------------------
@@ -128,27 +128,27 @@ static int findField(char *fldName)
 //----------------------------------------
 static int updtFld(int pos, char *data, int len)
 {
-   int ix;
+    int ix;
 
-   ix = findFieldPos(pos); // Locate Field by start position
+    ix = findFieldPos(pos); // Locate Field by start position
 
-   if (!ix) // Exit if no field found
-      return -1;
+    if (!ix) // Exit if no field found
+        return -1;
 
-   ix--; // Adjust to get actual field index
+    ix--; // Adjust to get actual field index
 
-   if (len <= fssFields[ix].length) // If data fits
-   {
-      memcpy(fssFields[ix].data, data, len); // Copy data
-      *(fssFields[ix].data + len) = '\0';    // Terminate string
-   }
-   else // ELSE - truncate data
-   {
-      memcpy(fssFields[ix].data, data, fssFields[ix].length); // Copy max amount we can
-      *(fssFields[ix].data + fssFields[ix].length) = '\0';    // Terminate string
-   }
+    if (len <= fssFields[ix].length) // If data fits
+    {
+        memcpy(fssFields[ix].data, data, len); // Copy data
+        *(fssFields[ix].data + len) = '\0';    // Terminate string
+    }
+    else // ELSE - truncate data
+    {
+        memcpy(fssFields[ix].data, data, fssFields[ix].length); // Copy max amount we can
+        *(fssFields[ix].data + fssFields[ix].length) = '\0';    // Terminate string
+    }
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -158,16 +158,16 @@ static int updtFld(int pos, char *data, int len)
 //----------------------------------------
 static char *makePrint(char *str)
 {
-   char *p;
+    char *p;
 
-   p = str;
-   while (*p) // Loop through string
-   {
-      if (!isprint(*p)) // If not a printable character
-         *p = '.';      // Replace with "."
-      p++;              // Next char
-   }
-   return str;
+    p = str;
+    while (*p) // Loop through string
+    {
+        if (!isprint(*p)) // If not a printable character
+            *p = '.';     // Replace with "."
+        p++;              // Next char
+    }
+    return str;
 }
 
 //----------------------------------------
@@ -177,18 +177,18 @@ static char *makePrint(char *str)
 //----------------------------------------
 int fssIsNumeric(char *data)
 {
-   int len;
-   int i;
+    int len;
+    int i;
 
-   len = strlen(data); // Get string length
-   if (len < 1)        // Empty string is NOT Numeric
-      return 0;
+    len = strlen(data); // Get string length
+    if (len < 1)        // Empty string is NOT Numeric
+        return 0;
 
-   for (i = 0; i < len; i++) // Check each character
-      if (!isdigit(*(data + i)))
-         return 0;
+    for (i = 0; i < len; i++) // Check each character
+        if (!isdigit(*(data + i)))
+            return 0;
 
-   return 1; // All characters are numbers
+    return 1; // All characters are numbers
 }
 
 //----------------------------------------
@@ -198,18 +198,18 @@ int fssIsNumeric(char *data)
 //----------------------------------------
 int fssIsHex(char *data)
 {
-   int len;
-   int i;
+    int len;
+    int i;
 
-   len = strlen(data); // Get string length
-   if (len < 1)        // Empty string is not HEX
-      return 0;
+    len = strlen(data); // Get string length
+    if (len < 1)        // Empty string is not HEX
+        return 0;
 
-   for (i = 0; i < len; i++) // Check each character
-      if (!isxdigit(*(data + i)))
-         return 0;
+    for (i = 0; i < len; i++) // Check each character
+        if (!isxdigit(*(data + i)))
+            return 0;
 
-   return 1;
+    return 1;
 }
 
 //----------------------------------------
@@ -219,21 +219,21 @@ int fssIsHex(char *data)
 //----------------------------------------
 int fssIsBlank(char *data)
 {
-   int i;
+    int i;
 
-   i = 0;
+    i = 0;
 
-   do
-   {
-      if (!(*(data + i))) // Empty string is blank
-         return 1;
+    do
+    {
+        if (!(*(data + i))) // Empty string is blank
+            return 1;
 
-      if (*(data + i) != ' ') // Check each character
-         return 0;
-      i++;
-   } while (1);
+        if (*(data + i) != ' ') // Check each character
+            return 0;
+        i++;
+    } while (1);
 
-   return 1; // String is blank
+    return 1; // String is blank
 }
 
 //----------------------------------------
@@ -243,21 +243,21 @@ int fssIsBlank(char *data)
 //----------------------------------------
 char *fssTrim(char *data)
 {
-   int len;
+    int len;
 
-   len = strlen(data); // Get string length
-   if (len == 0)
-      return data;
+    len = strlen(data); // Get string length
+    if (len == 0)
+        return data;
 
-   while (len) // Start at end of string
-   {
-      if (*(data + len - 1) != ' ') // Exit on first non-blank
-         return data;
-      *(data + len - 1) = '\0'; // Remove trailing blank
-      len--;
-   }
+    while (len) // Start at end of string
+    {
+        if (*(data + len - 1) != ' ') // Exit on first non-blank
+            return data;
+        *(data + len - 1) = '\0'; // Remove trailing blank
+        len--;
+    }
 
-   return data; // Return trimmed string
+    return data; // Return trimmed string
 }
 
 //----------------------------------------
@@ -267,13 +267,13 @@ char *fssTrim(char *data)
 //----------------------------------------
 int fssInit(void)
 {
-   fssFieldCnt = 0; // Set Field Count to Zero
-   fssCSRPOS = 0;   // Reset Cursor Position for next write
+    fssFieldCnt = 0; // Set Field Count to Zero
+    fssCSRPOS = 0;   // Reset Cursor Position for next write
 
-   stfsmode(1); // Begin TSO Fullscreen Mode
-   sttmpmd(1);
+    stfsmode(1); // Begin TSO Fullscreen Mode
+    sttmpmd(1);
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -283,22 +283,22 @@ int fssInit(void)
 //----------------------------------------
 int fssReset(void)
 {
-   int ix;
+    int ix;
 
-   for (ix = 0; ix < fssFieldCnt; ix++) // Loop through Field Array
-   {
-      if (fssFields[ix].name)
-         free(fssFields[ix].name); // Free field name
-      if (fssFields[ix].data)
-         free(fssFields[ix].data); // Free field data
-   }
+    for (ix = 0; ix < fssFieldCnt; ix++) // Loop through Field Array
+    {
+        if (fssFields[ix].name)
+            free(fssFields[ix].name); // Free field name
+        if (fssFields[ix].data)
+            free(fssFields[ix].data); // Free field data
+    }
 
-   fssFieldCnt = 0; // Reset field count
-   fssAID = 0;      // Reset last AID value
-   fssCSR = 0;      // Reset last Cursor position
-   fssCSRPOS = 0;   // Reset Cursor position
+    fssFieldCnt = 0; // Reset field count
+    fssAID = 0;      // Reset last AID value
+    fssCSR = 0;      // Reset last Cursor position
+    fssCSRPOS = 0;   // Reset Cursor position
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -308,13 +308,13 @@ int fssReset(void)
 //----------------------------------------
 int fssTerm(void)
 {
-   fssReset(); // Call Reset to free storage
+    fssReset(); // Call Reset to free storage
 
-   stlineno(1); // Exit TSO Full Screen Mode
-   stfsmode(0);
-   sttmpmd(0);
+    stlineno(1); // Exit TSO Full Screen Mode
+    stfsmode(0);
+    sttmpmd(0);
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -324,7 +324,7 @@ int fssTerm(void)
 //----------------------------------------
 int fssGetAID(void)
 {
-   return fssAID;
+    return fssAID;
 }
 
 //----------------------------------------
@@ -334,7 +334,7 @@ int fssGetAID(void)
 //----------------------------------------
 int fssAttr(int attr)
 {
-   return ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
+    return ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
 }
 
 //----------------------------------------
@@ -347,32 +347,32 @@ int fssAttr(int attr)
 //----------------------------------------
 int fssTxt(int row, int col, int attr, char *text)
 {
-   int txtlen;
-   int ix;
+    int txtlen;
+    int ix;
 
-   makePrint(text);       // Eliminate non-printable characters
-   txtlen = strlen(text); // get text length
+    makePrint(text);       // Eliminate non-printable characters
+    txtlen = strlen(text); // get text length
 
-   // Validate Field Starting Position
-   if (row < 1 || col < 2 || row > MAX_ROW || col > MAX_COL)
-      return -1;
+    // Validate Field Starting Position
+    if (row < 1 || col < 2 || row > MAX_ROW || col > MAX_COL)
+        return -1;
 
-   if (txtlen < 1 || txtlen > 79) // Validate Maximum Length
-      return -2;
+    if (txtlen < 1 || txtlen > 79) // Validate Maximum Length
+        return -2;
 
-   ix = fssFieldCnt++; // Increment field count
+    ix = fssFieldCnt++; // Increment field count
 
-   //----------------------------
-   // Fill In Field Array Values
-   //----------------------------
-   fssFields[ix].name = 0; // no name for a text field
-   fssFields[ix].bufaddr = bufPos(row, col);
-   fssFields[ix].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
-   fssFields[ix].length = txtlen;
-   fssFields[ix].data = (char *)malloc(txtlen + 1);
-   strcpy(fssFields[ix].data, text);
+    //----------------------------
+    // Fill In Field Array Values
+    //----------------------------
+    fssFields[ix].name = 0; // no name for a text field
+    fssFields[ix].bufaddr = bufPos(row, col);
+    fssFields[ix].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
+    fssFields[ix].length = txtlen;
+    fssFields[ix].data = (char *)malloc(txtlen + 1);
+    strcpy(fssFields[ix].data, text);
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -387,42 +387,42 @@ int fssTxt(int row, int col, int attr, char *text)
 //----------------------------------------
 int fssFld(int row, int col, int attr, char *fldName, int len, char *text)
 {
-   int ix;
+    int ix;
 
-   // Validate Field Start Position
-   if (row < 1 || col < 2 || row > MAX_ROW || col > MAX_COL)
-      return -1;
+    // Validate Field Start Position
+    if (row < 1 || col < 2 || row > MAX_ROW || col > MAX_COL)
+        return -1;
 
-   // Validate Field Length
-   if (len < 1 || len > 79)
-      return -2;
+    // Validate Field Length
+    if (len < 1 || len > 79)
+        return -2;
 
-   if (findField(fldName)) // Check for duplicate Field Name
-      return -3;
+    if (findField(fldName)) // Check for duplicate Field Name
+        return -3;
 
-   ix = fssFieldCnt++; // Increment Field Count
+    ix = fssFieldCnt++; // Increment Field Count
 
-   //----------------------------
-   // Fill In Field Array Values
-   //----------------------------
-   fssFields[ix].name = (char *)malloc(strlen(fldName) + 1);
-   strcpy(fssFields[ix].name, fldName);
-   fssFields[ix].bufaddr = bufPos(row, col);
-   fssFields[ix].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
-   fssFields[ix].length = len;
-   fssFields[ix].data = (char *)malloc(len + 1);
+    //----------------------------
+    // Fill In Field Array Values
+    //----------------------------
+    fssFields[ix].name = (char *)malloc(strlen(fldName) + 1);
+    strcpy(fssFields[ix].name, fldName);
+    fssFields[ix].bufaddr = bufPos(row, col);
+    fssFields[ix].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
+    fssFields[ix].length = len;
+    fssFields[ix].data = (char *)malloc(len + 1);
 
-   makePrint(text); // Eliminate non-printable characters
+    makePrint(text); // Eliminate non-printable characters
 
-   if (strlen(text) <= fssFields[ix].length) // Copy text if it fits into field
-      strcpy(fssFields[ix].data, text);
-   else // Truncate text if too long
-   {
-      strncpy(fssFields[ix].data, text, fssFields[ix].length);
-      *(fssFields[ix].data + fssFields[ix].length) = '\0';
-   }
+    if (strlen(text) <= fssFields[ix].length) // Copy text if it fits into field
+        strcpy(fssFields[ix].data, text);
+    else // Truncate text if too long
+    {
+        strncpy(fssFields[ix].data, text, fssFields[ix].length);
+        *(fssFields[ix].data + fssFields[ix].length) = '\0';
+    }
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -432,26 +432,26 @@ int fssFld(int row, int col, int attr, char *fldName, int len, char *text)
 //----------------------------------------
 int fssSetField(char *fldName, char *text)
 {
-   int ix;
-   int txtLen;
+    int ix;
+    int txtLen;
 
-   ix = findField(fldName); // Locate Field by Name
-   if (!ix)
-      return -4;
+    ix = findField(fldName); // Locate Field by Name
+    if (!ix)
+        return -4;
 
-   ix--; // Actual Array Index Value
+    ix--; // Actual Array Index Value
 
-   makePrint(text); // Eliminate non-printable characters
+    makePrint(text); // Eliminate non-printable characters
 
-   if (strlen(text) <= fssFields[ix].length) // If text fits, copy it
-      strcpy(fssFields[ix].data, text);
-   else // Truncate if too long
-   {
-      strncpy(fssFields[ix].data, text, fssFields[ix].length);
-      *(fssFields[ix].data + fssFields[ix].length) = '\0';
-   }
+    if (strlen(text) <= fssFields[ix].length) // If text fits, copy it
+        strcpy(fssFields[ix].data, text);
+    else // Truncate if too long
+    {
+        strncpy(fssFields[ix].data, text, fssFields[ix].length);
+        *(fssFields[ix].data + fssFields[ix].length) = '\0';
+    }
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -461,13 +461,13 @@ int fssSetField(char *fldName, char *text)
 //----------------------------------------
 char *fssGetField(char *fldName)
 {
-   int ix;
+    int ix;
 
-   ix = findField(fldName); // Find Field by Name
-   if (!ix)
-      return (char *)0;
+    ix = findField(fldName); // Find Field by Name
+    if (!ix)
+        return (char *)0;
 
-   return fssFields[ix - 1].data; // Return pointer to data
+    return fssFields[ix - 1].data; // Return pointer to data
 }
 
 //----------------------------------------
@@ -477,14 +477,14 @@ char *fssGetField(char *fldName)
 //----------------------------------------
 int fssSetCursor(char *fldName)
 {
-   int ix;
+    int ix;
 
-   ix = findField(fldName); // Find Field by Name
-   if (!ix)
-      return -1;
+    ix = findField(fldName); // Find Field by Name
+    if (!ix)
+        return -1;
 
-   fssCSRPOS = bufAddr(fssFields[ix - 1].bufaddr); // Cursor pos = field start position
-   return 0;
+    fssCSRPOS = bufAddr(fssFields[ix - 1].bufaddr); // Cursor pos = field start position
+    return 0;
 }
 
 //----------------------------------------
@@ -494,17 +494,17 @@ int fssSetCursor(char *fldName)
 //----------------------------------------
 int fssSetAttr(char *fldName, int attr)
 {
-   int ix;
+    int ix;
 
-   ix = findField(fldName); // Find Field by Name
+    ix = findField(fldName); // Find Field by Name
 
-   if (!ix)
-      return -1;
+    if (!ix)
+        return -1;
 
-   // Replace Basic 3270 Attribute data
-   fssFields[ix - 1].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
+    // Replace Basic 3270 Attribute data
+    fssFields[ix - 1].attr = ((attr & 0xFFFF00) | xlate3270(attr & 0xFF));
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -514,19 +514,19 @@ int fssSetAttr(char *fldName, int attr)
 //----------------------------------------
 int fssSetColor(char *fldName, int color)
 {
-   int ix;
-   int attr;
+    int ix;
+    int attr;
 
-   ix = findField(fldName); // Find Field by Name
+    ix = findField(fldName); // Find Field by Name
 
-   if (!ix)
-      return -1;
+    if (!ix)
+        return -1;
 
-   // Update Color Attribute Value
-   attr = (fssFields[ix - 1].attr & 0xFF00FF) | (color & 0xFF00);
-   fssFields[ix - 1].attr = attr;
+    // Update Color Attribute Value
+    attr = (fssFields[ix - 1].attr & 0xFF00FF) | (color & 0xFF00);
+    fssFields[ix - 1].attr = attr;
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -536,19 +536,19 @@ int fssSetColor(char *fldName, int color)
 //----------------------------------------
 int fssSetXH(char *fldName, int xha)
 {
-   int ix;
-   int attr;
+    int ix;
+    int attr;
 
-   ix = findField(fldName); // Find Field by Name
+    ix = findField(fldName); // Find Field by Name
 
-   if (!ix)
-      return -1;
+    if (!ix)
+        return -1;
 
-   // Update Extended Formatting Attribute
-   attr = (fssFields[ix - 1].attr & 0xFFFF) | (xha & 0xFF0000);
-   fssFields[ix - 1].attr = attr;
+    // Update Extended Formatting Attribute
+    attr = (fssFields[ix - 1].attr & 0xFFFF) | (xha & 0xFF0000);
+    fssFields[ix - 1].attr = attr;
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -558,56 +558,56 @@ int fssSetXH(char *fldName, int xha)
 //----------------------------------------
 static int doInput(char *buf, int len)
 {
-   int l;
-   int bufpos;
-   int fldLen;
-   char *p;
-   char *s;
+    int l;
+    int bufpos;
+    int fldLen;
+    char *p;
+    char *s;
 
-   p = buf;
-   l = len;
+    p = buf;
+    l = len;
 
-   if (len < 3) // Must be at least 3 bytes long
-   {
-      fssAID = 0;
-      fssCSR = 0;
-      return -1;
-   }
+    if (len < 3) // Must be at least 3 bytes long
+    {
+        fssAID = 0;
+        fssCSR = 0;
+        return -1;
+    }
 
-   fssAID = *p; // Save AID Value
-   p++;         // Skip over AID
-   l--;
+    fssAID = *p; // Save AID Value
+    p++;         // Skip over AID
+    l--;
 
-   fssCSR = bufOff((*p << 8) + *(p + 1)); // Save Cursor Position
-   p += 2;                                // skip over Cursor Position
-   l -= 2;
+    fssCSR = bufOff((*p << 8) + *(p + 1)); // Save Cursor Position
+    p += 2;                                // skip over Cursor Position
+    l -= 2;
 
-   while (l > 3) // Min field length is 3 (0x11 + buffer position)
-   {
-      if (*p != 0x11) // Expecting Start Field sequence
-         return -2;
+    while (l > 3) // Min field length is 3 (0x11 + buffer position)
+    {
+        if (*p != 0x11) // Expecting Start Field sequence
+            return -2;
 
-      p++; // Skip over
-      l--;
+        p++; // Skip over
+        l--;
 
-      bufpos = bufOff((*p << 8) + *(p + 1)); // Get buffer position
-      p += 2;                                // Skip over
-      l -= 2;
+        bufpos = bufOff((*p << 8) + *(p + 1)); // Get buffer position
+        p += 2;                                // Skip over
+        l -= 2;
 
-      s = p; // Save start of field data
+        s = p; // Save start of field data
 
-      while (l && *p != 0x11) // Scan for end of field
-      {
-         p++;
-         l--;
-      }
+        while (l && *p != 0x11) // Scan for end of field
+        {
+            p++;
+            l--;
+        }
 
-      fldLen = p - s; // Calculate field position
+        fldLen = p - s; // Calculate field position
 
-      updtFld(bufpos, s, fldLen); // Update field Contents
-   }
+        updtFld(bufpos, s, fldLen); // Update field Contents
+    }
 
-   return 0;
+    return 0;
 }
 
 //----------------------------------------
@@ -617,102 +617,102 @@ static int doInput(char *buf, int len)
 //----------------------------------------
 int fssRefresh(void)
 {
-   int ba;
-   int ix;
-   int i;
-   int inLen;
-   int xHilight;
-   int xColor;
-   int BUFLEN;
-   char *outBuf;
-   char *inBuf;
-   char *p;
+    int ba;
+    int ix;
+    int i;
+    int inLen;
+    int xHilight;
+    int xColor;
+    int BUFLEN;
+    char *outBuf;
+    char *inBuf;
+    char *p;
 
-   BUFLEN = (MAX_ROW * MAX_COL * 2); // Max buffer length
+    BUFLEN = (MAX_ROW * MAX_COL * 2); // Max buffer length
 
-   outBuf = malloc(BUFLEN); // alloc output buffer
-   inBuf = malloc(BUFLEN);  // alloc input buffer
+    outBuf = malloc(BUFLEN); // alloc output buffer
+    inBuf = malloc(BUFLEN);  // alloc input buffer
 
-   p = outBuf; // current position in 3270 data stream
+    p = outBuf; // current position in 3270 data stream
 
-   *p++ = 0x27; // Escape
-   *p++ = 0xF5; // Write/Erase
-   *p++ = 0xC3; // WCC
+    *p++ = 0x27; // Escape
+    *p++ = 0xF5; // Write/Erase
+    *p++ = 0xC3; // WCC
 
-   for (ix = 0; ix < fssFieldCnt; ix++) // Loop through fields
-   {
-      ba = bufAddr(fssFields[ix].bufaddr - 1); // Back up one from field start position
-      *p++ = 0x11;                             // SBA
-      *p++ = (ba >> 8) & 0xFF;                 // 3270 Buffer address
-      *p++ = ba & 0xFF;                        // 3270 Buffer address
-      *p++ = 0x1D;                             // Start Field
-      *p++ = BA(fssFields[ix].attr);           // Basic Attribute
+    for (ix = 0; ix < fssFieldCnt; ix++) // Loop through fields
+    {
+        ba = bufAddr(fssFields[ix].bufaddr - 1); // Back up one from field start position
+        *p++ = 0x11;                             // SBA
+        *p++ = (ba >> 8) & 0xFF;                 // 3270 Buffer address
+        *p++ = ba & 0xFF;                        // 3270 Buffer address
+        *p++ = 0x1D;                             // Start Field
+        *p++ = BA(fssFields[ix].attr);           // Basic Attribute
 
-      xHilight = XH(fssFields[ix].attr); // Get Extended Highlighting Attribute
-      xColor = XC(fssFields[ix].attr);   // Get Extended Color Attribute
+        xHilight = XH(fssFields[ix].attr); // Get Extended Highlighting Attribute
+        xColor = XC(fssFields[ix].attr);   // Get Extended Color Attribute
 
-      if (xHilight) // If any Extended Highlighting
-      {
-         *p++ = 0x28;     // Set Attribute
-         *p++ = 0x41;     // Extended
-         *p++ = xHilight; // Value
-      }
+        if (xHilight) // If any Extended Highlighting
+        {
+            *p++ = 0x28;     // Set Attribute
+            *p++ = 0x41;     // Extended
+            *p++ = xHilight; // Value
+        }
 
-      if (xColor) // If any Extended Color
-      {
-         *p++ = 0x28;   // Set Attribute
-         *p++ = 0x42;   // Extended
-         *p++ = xColor; // Value
-      }
+        if (xColor) // If any Extended Color
+        {
+            *p++ = 0x28;   // Set Attribute
+            *p++ = 0x42;   // Extended
+            *p++ = xColor; // Value
+        }
 
-      i = 0;
-      if (fssFields[ix].data) // Insert field data contents
-      {
-         i = strlen(fssFields[ix].data); // length of data
-         if (fssFields[ix].length < i)   // truncate if too long
-            i = fssFields[ix].length;
-         memcpy(p, fssFields[ix].data, i); // copy to 3270 data stream
-         p += i;                           // update position in data stream
-      }
+        i = 0;
+        if (fssFields[ix].data) // Insert field data contents
+        {
+            i = strlen(fssFields[ix].data); // length of data
+            if (fssFields[ix].length < i)   // truncate if too long
+                i = fssFields[ix].length;
+            memcpy(p, fssFields[ix].data, i); // copy to 3270 data stream
+            p += i;                           // update position in data stream
+        }
 
-      // End of field position
-      ba = bufAddr(fssFields[ix].bufaddr + fssFields[ix].length);
-      *p++ = 0x11;             // SBA
-      *p++ = (ba >> 8) & 0xFF; // 3270 buffer address
-      *p++ = ba & 0xFF;
-      *p++ = 0x1D;               // start field
-      *p++ = xlate3270(fssPROT); // attrubute = protected
+        // End of field position
+        ba = bufAddr(fssFields[ix].bufaddr + fssFields[ix].length);
+        *p++ = 0x11;             // SBA
+        *p++ = (ba >> 8) & 0xFF; // 3270 buffer address
+        *p++ = ba & 0xFF;
+        *p++ = 0x1D;               // start field
+        *p++ = xlate3270(fssPROT); // attrubute = protected
 
-      if (xHilight || xColor) // If field had Extended Attribute values
-      {
-         *p++ = 0x28; // Set Attrubite
-         *p++ = 0x00; // Reset all
-         *p++ = 0x00; //    to Default
-      }
-   }
+        if (xHilight || xColor) // If field had Extended Attribute values
+        {
+            *p++ = 0x28; // Set Attrubite
+            *p++ = 0x00; // Reset all
+            *p++ = 0x00; //    to Default
+        }
+    }
 
-   if (fssCSRPOS) // If Cursor position was specified
-   {
-      *p++ = 0x11;                    // SBA
-      *p++ = (fssCSRPOS >> 8) & 0xFF; // Buffer position
-      *p++ = fssCSRPOS & 0xFF;
-      *p++ = 0x13; // Insert Cursor
-      fssCSRPOS = 0;
-   }
+    if (fssCSRPOS) // If Cursor position was specified
+    {
+        *p++ = 0x11;                    // SBA
+        *p++ = (fssCSRPOS >> 8) & 0xFF; // Buffer position
+        *p++ = fssCSRPOS & 0xFF;
+        *p++ = 0x13; // Insert Cursor
+        fssCSRPOS = 0;
+    }
 
-   // Write Screen and Get Input
-   do
-   {
-      tput_fullscr(outBuf, p - outBuf); // Fullscreen TPUT
+    // Write Screen and Get Input
+    do
+    {
+        tput_fullscr(outBuf, p - outBuf); // Fullscreen TPUT
 
-      inLen = tget_asis(inBuf, BUFLEN); // TGET-ASIS
-      if (*inBuf != 0x6E)               // Check for reshow
-         break;                         //   no - break out
-   } while (1);                         // Display Screen until no reshow
+        inLen = tget_asis(inBuf, BUFLEN); // TGET-ASIS
+        if (*inBuf != 0x6E)               // Check for reshow
+            break;                        //   no - break out
+    } while (1);                          // Display Screen until no reshow
 
-   doInput(inBuf, inLen); // Process Input Data Stream
+    doInput(inBuf, inLen); // Process Input Data Stream
 
-   free(outBuf); // Free Output Buffer
-   free(inBuf);  // Free Input Buffer
-   return 0;
+    free(outBuf); // Free Output Buffer
+    free(inBuf);  // Free Input Buffer
+    return 0;
 }

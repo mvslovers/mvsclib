@@ -1,9 +1,9 @@
 #include <string.h>
 #include <stdio.h>
-#include "ezasmi.h"
+#include <ezasmi/ezasmi.h>
 
 /*******************/
-/* WORKING - Alpha */
+/* WORKING - Beta */
 /*******************/
 
 /* Initialize EZASMI */

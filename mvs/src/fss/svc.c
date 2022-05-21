@@ -1,4 +1,4 @@
-#include "svc.h"
+#include <fss/svc.h>
 
 void EXSVC(int svc, struct REGS *regs)
 {
