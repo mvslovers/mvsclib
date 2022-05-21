@@ -1,6 +1,6 @@
 //GCCGEN   JOB CLASS=A,MSGCLASS=X,REGION=0K,
-//           USER=<USER>,
-//           PASSWORD=<PASSWORD>
+//           USER=__USER__,
+//           PASSWORD=__PASS__
 //*
 //PDPASM   PROC PDPPREF='MVSCLIB',MEMBER=''
 //*

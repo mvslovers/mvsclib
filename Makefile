@@ -1,5 +1,7 @@
 # Makefile for MVS
 
+USER=HERC01
+PASS=CUL8TR
 # --------------------------------------------
 # System dependent
 # --------------------------------------------
@@ -39,7 +41,9 @@ MVS_C_SOURCE+=$(wildcard ./mvs/src/fss/*.c)
 MVS_S:=$(subst .c,.s,$(MVS_C_SOURCE))
 
 mvs_asm: $(MVS_S)
-	m4 -I mvs/maclib/ -I mvs/asm/ -I common/src/ job_mvs_template.m4 > job_mvs.jcl
+	m4 -D__USER__=$(USER) -D__PASS__=$(PASS) \
+	   -I mvs/maclib/ -I mvs/asm/ -I common/src/ \
+	   job_mvs_template.m4 > job_mvs.jcl
 
 .c.s:
 	$(GCCMVS) $(MVS_OPTS) $< -o $@
