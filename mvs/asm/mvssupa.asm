@@ -3247,8 +3247,8 @@ TRUNCOEX L     R13,4(,R13)
          ST    R0,0(R5)           UPDATE R0
 *
          FUNEXIT RC=(R15)
-	 SPACE 2
-	 POP   USING
+         SPACE 2
+         POP   USING
 *
 *
 *
