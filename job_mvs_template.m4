@@ -11,20 +11,28 @@
 //ALIAS1   EXEC PGM=IDCAMS
 //SYSIN    DD *
   DEFINE ALIAS(NAME(MVSCLIB) RELATE(UCPUB000))
+  DELETE MVSCLIB.INCLUDE
   DELETE MVSCLIB.MACLIB
   DELETE MVSCLIB.NCALIB
   SET MAXCC=0
 //SYSPRINT DD  SYSOUT=*
 //* -------------------------------------------------------------------
 //ALLOC    EXEC PGM=IEFBR14
+//INCLUDE  DD DSN=MVSCLIB.INCLUDE,
+//          DISP=(NEW,CATLG,DELETE),
+//          UNIT=3375,
+//          SPACE=(CYL,(1,0,32)),
+//          DCB=(DSORG=PO,RECFM=VB,LRECL=255,BLKSIZE=6233)
 //MACLIB   DD DSN=MVSCLIB.MACLIB,
 //          DISP=(NEW,CATLG,DELETE),
-//          UNIT=3390,VOL=SER=PUB001,
-//          SPACE=(CYL,(1,0,32)),DCB=SYS1.MACLIB 
+//          UNIT=3375,
+//          SPACE=(CYL,(1,0,32)),
+//          DCB=(DSORG=PO,RECFM=FB,LRECL=80,BLKSIZE=6160)
 //NCALIB   DD DSN=MVSCLIB.NCALIB,
 //          DISP=(NEW,CATLG,DELETE),
-//          UNIT=3390,VOL=SER=PUB001,
-//          SPACE=(CYL,(2,0,80)),DCB=SYS1.MACLIB
+//          UNIT=3375,
+//          SPACE=(CYL,(2,0,80)),
+//          DCB=(DSORG=PO,RECFM=U,LRECL=256,BLKSIZE=6144)
 //* -------------------------------------------------------------------
 //PDPMAIN  EXEC PGM=IEBGENER
 //SYSUT2   DD  DSN=MVSCLIB.MACLIB(PDPMAIN),DISP=(OLD,PASS)
@@ -108,6 +116,7 @@ undivert(mvssupa.asm)dnl
  ALIAS @@SYSTEM
  ALIAS @@IDCAMS
  ALIAS @@DYNAL
+ ALIAS @@SVC  
 /*
 //START    EXEC PDPASM,MEMBER=START
 //SYSIN  DD *

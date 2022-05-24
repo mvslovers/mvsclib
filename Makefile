@@ -1,15 +1,15 @@
 # Makefile for MVS
 
-USER=HERC01
-PASS=CUL8TR
+USER ?= HERC01
+PASS ?= CUL8TR
 # --------------------------------------------
 # System dependent
 # --------------------------------------------
 CC=gcc
-GCCMVS = ../gccmvs/gccmvs
-RDRPREP = ../playmvs/rdrprep/rdrprep
-HERCHOST = 127.0.0.1
-HERCPORT = 3505
+GCCMVS   ?= ../gccmvs/gccmvs
+RDRPREP  ?= ../playmvs/rdrprep/rdrprep
+HERCHOST ?= 127.0.0.1
+HERCPORT ?= 3505
 
 all: linux/libmvsclib.a mvs_asm
 
